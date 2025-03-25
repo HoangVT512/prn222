@@ -1,0 +1,104 @@
+﻿@model IEnumerable<InternManagement.Models.ConversationMember>
+@{
+    ViewData["Title"] = "Messages";
+    //var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    //int.TryParse(currentUserId, out int userId);
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h6>Messages</h6>
+                    <a href="@Url.Action("New", "Messaging")" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus me-2"></i> New Conversation
+                    </a>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        @if (Model.Any())
+                        {
+                            <div class="list-group">
+                                @foreach (var member in Model)
+                                {
+                                    var conversation = member.Conversation;
+                                    var otherMember = conversation.ConversationMembers
+                                    .FirstOrDefault(m => m.UserId != 1)?.User;
+                                    var lastMessage = conversation.Messages
+                                    .OrderByDescending(m => m.CreatedAt)
+                                    .FirstOrDefault();
+                                    var displayName = conversation.IsGroup
+                                    ? conversation.Name
+                                    : (otherMember?.FullName ?? "Unknown User");
+                                    var profilePic = conversation.IsGroup
+                                    ? "wwwroot/uploads/group-default.png"
+                                    : (otherMember?.Pfp ?? "wwwroot/uploads/user-default.png");
+
+                                    <a href="@Url.Action("Chat", "Messaging", new { id = conversation.Id })"
+                                       class="list-group-item list-group-item-action">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                @if (conversation.IsGroup)
+                                                {
+                                                    <div class="avatar-group position-relative" style="width: 45px; height: 45px;">
+                                                        @foreach (var m in conversation.ConversationMembers.Take(3))
+                                                        {
+                                                            var index = conversation.ConversationMembers.ToList().IndexOf(m);
+                                                            var offsetX = index * 15;
+                                                            <img src="@(m.User.Pfp ?? "wwwroot/uploads/user-default.png")"
+                                                                 class="avatar rounded-circle position-absolute"
+                                                                 style="width: 30px; height: 30px; object-fit: cover; left: @(offsetX)px; z-index: @(3-index); border: 2px solid #fff;"
+                                                                 alt="@m.User.FullName">
+                                                        }
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <img src="@profilePic" class="avatar rounded-circle"
+                                                         style="width: 45px; height: 45px; object-fit: cover;"
+                                                         alt="@displayName">
+                                                }
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">@displayName</h6>
+                                                    <small class="text-muted">
+                                                        @(lastMessage?.CreatedAt.ToString("HH:mm") ?? "")
+                                                    </small>
+                                                </div>
+                                                <p class="mb-1 text-muted text-truncate">
+                                                    @if (lastMessage != null)
+                                                    {
+                                                        if (lastMessage.SenderId == 1)
+                                                        {
+                                                            <span>You: @lastMessage.Content</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@lastMessage.Sender.FullName: @lastMessage.Content</span>
+                                                        }
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-5">
+                                <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                                <p>You don't have any conversations yet.</p>
+                                <a href="@Url.Action("New", "Messaging")" class="btn btn-primary btn-sm">
+                                    Start a Conversation
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Daily Tracking Report";
+    var taskId = ViewBag.TaskId;
+    var taskTitle = ViewBag.TaskTitle;
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">Daily Progress Report</h1>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="StudentDashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Tasks</a></li>
+            <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@taskId">@taskTitle</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Daily Report</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-calendar-day"></i> Daily Progress Report for: @taskTitle
+                </div>
+                <div class="card-body">
+                    <form asp-action="DailyTracking" method="post">
+                        <input type="hidden" name="taskId" value="@taskId" />
+
+                        <div class="mb-3">
+                            <label for="report" class="form-label">What did you accomplish today?</label>
+                            <textarea class="form-control" id="report" name="report" rows="8" required
+                                      placeholder="Describe what you worked on today, any challenges you faced, and what you plan to do next..."></textarea>
+                        </div>
+
+                        <div class="mb-3 d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@taskId" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-lightbulb"></i> Tips for a Good Report
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Be specific about what you accomplished</li>
+                        <li class="list-group-item">Mention any challenges or blockers you encountered</li>
+                        <li class="list-group-item">Include questions you have for your mentor</li>
+                        <li class="list-group-item">Outline what you plan to work on next</li>
+                        <li class="list-group-item">Keep reports concise but informative</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

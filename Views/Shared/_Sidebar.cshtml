@@ -1,0 +1,19 @@
+﻿@{
+    var role = ViewBag.Role as string;
+    if (ViewBag.Role == null)
+        role = "Student";
+}
+
+
+@if (role == "Admin")
+{
+    @Html.Partial("_SidebarAdmin")
+}
+else if (role == "Mentor")
+{
+    @Html.Partial("_SidebarMentor")
+}
+else if (role == "Student")
+{
+    @Html.Partial("_SidebarStudent")
+}

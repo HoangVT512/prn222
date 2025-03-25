@@ -1,0 +1,59 @@
+﻿@model InternManagement.Models.Dailytracking
+
+@{
+    ViewData["Title"] = "Submit Daily Report";
+    var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+}
+
+<div class="container-fluid">
+    <h1 class="mb-4">Daily Progress Report</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-calendar-day"></i> Report for @currentDate
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="TaskId" class="form-label">Related Task</label>
+                    <select asp-for="TaskId" class="form-select" asp-items="ViewBag.TaskId">
+                        <option value="">-- Select the task you worked on today --</option>
+                    </select>
+                    <span asp-validation-for="TaskId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Report" class="form-label">Daily Report</label>
+                    <textarea asp-for="Report" class="form-control" rows="10" placeholder="Describe what you worked on today, any challenges you faced, and what you plan to do next..."></textarea>
+                    <span asp-validation-for="Report" class="text-danger"></span>
+                    <div class="form-text">
+                        Be specific about what you accomplished today. Include:
+                        <ul>
+                            <li>Tasks completed</li>
+                            <li>Challenges or blockers encountered</li>
+                            <li>Plans for tomorrow</li>
+                            <li>Questions for your mentor</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Submit Task";
+    var taskId = ViewBag.TaskId;
+    var taskTitle = ViewBag.TaskTitle;
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">Submit Task</h1>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="StudentDashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Tasks</a></li>
+            <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@taskId">@taskTitle</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Submit</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-upload"></i> Submit Task: @taskTitle
+                </div>
+                <div class="card-body">
+                    <form asp-action="Submit" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="taskId" value="@taskId" />
+
+                        <div class="mb-3">
+                            <label for="submittedFile" class="form-label">Upload File (optional)</label>
+                            <input type="file" class="form-control" id="submittedFile" name="submittedFile">
+                            <div class="form-text">Accepted file formats: PDF, DOC, DOCX, ZIP, etc.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="remarks" class="form-label">Remarks</label>
+                            <textarea class="form-control" id="remarks" name="remarks" rows="5" placeholder="Add any comments or notes about your submission..."></textarea>
+                        </div>
+
+                        <div class="mb-3 d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@taskId" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Task
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i> Submission Guidelines
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Ensure your submission is complete and meets all requirements.</li>
+                        <li class="list-group-item">Files should be properly named with your name and task ID.</li>
+                        <li class="list-group-item">If you have multiple files, compress them into a single ZIP file.</li>
+                        <li class="list-group-item">Provide clear remarks to help your mentor understand your submission.</li>
+                        <li class="list-group-item">You can update your submission by resubmitting before the deadline.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

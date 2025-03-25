@@ -1,0 +1,29 @@
+﻿@model InternManagement.Models.User
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow p-4">
+        <h4 class="mb-4 text-center">User Details</h4>
+        <hr />
+        <div class="text-center mb-3">
+            <img src="@Model.Pfp" alt="Avatar" class="img-thumbnail rounded-circle" style="width:100px; height:100px;">
+        </div>
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FullName)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.FullName)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Phone)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Phone)</dd>
+        </dl>
+        <div class="text-center mt-4">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary px-4">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary px-4">Back to List</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+﻿@model InternManagement.Models.Task
+
+<h2>Chỉnh sửa nhiệm vụ</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Title">Tiêu đề</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description">Mô tả</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StatusId">Trạng thái</label>
+        <select asp-for="StatusId" class="form-control" asp-items="@(new SelectList(ViewBag.Statuses, "Id", "Name"))"></select>
+        <span asp-validation-for="StatusId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Chọn tệp đính kèm</label>
+        <input type="file" name="file" class="form-control" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.File))
+    {
+        <div class="form-group">
+            <label>File hiện tại:</label>
+            <a href="@Url.Action("Download", "Task", new { filePath = Model.File })" class="btn btn-success">Tải xuống</a>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

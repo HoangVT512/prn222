@@ -1,0 +1,146 @@
+﻿@model IEnumerable<InternManagement.Models.User>
+@{
+    ViewData["Title"] = "Student Management";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Student Management</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "AdminDashboard")">Dashboard</a></li>
+        <li class="breadcrumb-item active">Students</li>
+    </ol>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-user-graduate me-1"></i>
+                    Student List
+                </div>
+                <div>
+                    <a href="@Url.Action("Create")" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Student
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Filters -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form method="get" id="filterForm">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search by name or email" 
+                                           name="searchString" value="@Context.Request.Query["searchString"]">
+                                    <button class="btn btn-outline-secondary" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" name="status" onchange="document.getElementById('filterForm').submit()">
+                                    <option value="">All Statuses</option>
+                                    @foreach (var status in ViewBag.StatusOptions)
+                                    {
+                                        //<option value="@status" @(Context.Request.Query["status"] == status ? "selected" : "")>@status</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" name="groupId" onchange="document.getElementById('filterForm').submit()">
+                                    <option value="">All Groups</option>
+                                    @foreach (var group in (SelectList)ViewBag.Groups)
+                                    {
+                                       // <option value="@group.Value" @(Context.Request.Query["groupId"] == group.Value ? "selected" : "")>@group.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="@Url.Action("Index")" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-redo"></i> Reset
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Student Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="studentTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Group</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@student.FullName</td>
+                                <td>@student.Email</td>
+                                <td>@(student.Group?.Name ?? "Not Assigned")</td>
+@*                                 <td>
+                                    @switch (student.InternStatus)
+                                    {
+                                        case "ACTIVE":
+                                            <span class="badge bg-success">Active</span>
+                                            break;
+                                        case "COMPLETED":
+                                            <span class="badge bg-info">Completed</span>
+                                            break;
+                                        case "DROPPED":
+                                            <span class="badge bg-danger">Dropped</span>
+                                            break;
+                                        case "ON_HOLD":
+                                            <span class="badge bg-warning">On Hold</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">Unknown</span>
+                                            break;
+                                    }
+                                </td> *@
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("Details", new { id = student.Id })" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", new { id = student.Id })" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="@Url.Action("Delete", new { id = student.Id })" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#studentTable').DataTable({
+                paging: true,
+                searching: false,
+                ordering: true,
+                info: true,
+                "pageLength": 10
+            });
+        });
+    </script>
+}

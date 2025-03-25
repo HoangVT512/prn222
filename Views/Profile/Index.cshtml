@@ -1,0 +1,71 @@
+﻿@model InternManagement.Models.User
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">My Profile</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.Pfp))
+                    {
+                        <img src="@Model.Pfp" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="max-width: 150px; max-height: 150px;">
+                    }
+                    else
+                    {
+                        <img src="/images/default-profile.png" alt="Default Profile Picture" class="img-fluid rounded-circle mb-3" style="max-width: 150px; max-height: 150px;">
+                    }
+                    <h4 class="card-title">@Model.FullName</h4>
+                    <p class="card-text text-muted">@Model.Role?.Name</p>
+                    <a asp-action="Edit" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user"></i> Profile Information
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th width="30%">Full Name</th>
+                                <td>@Model.FullName</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>@Model.Email</td>
+                            </tr>
+                            <tr>
+                                <th>Phone</th>
+                                <td>@(string.IsNullOrEmpty(Model.Phone) ? "Not provided" : Model.Phone)</td>
+                            </tr>
+                            <tr>
+                                <th>Group</th>
+                                <td>@Model.Group?.Name</td>
+                            </tr>
+                            <tr>
+                                <th>Username</th>
+                                <td>@Model.Username</td>
+                            </tr>
+                            <tr>
+                                <th>Login Provider</th>
+                                <td>@Model.LoginProvider</td>
+                            </tr>
+                            <tr>
+                                <th>Account Created</th>
+                                <td>@Model.CreatedAt.ToString("yyyy-MM-dd")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

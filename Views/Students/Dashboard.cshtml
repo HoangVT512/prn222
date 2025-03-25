@@ -1,0 +1,93 @@
+﻿@model InternManagement.Models.ViewModels.StudentDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Nhiệm vụ cần làm -->
+        <div class="col-md-6">
+            <h3>Nhiệm vụ của bạn</h3>
+            <ul class="list-group">
+                @foreach (var task in Model.PendingTasks)
+                {
+                    <li class="list-group-item">
+                        <strong>@task.Title</strong> - @task.Status.Name
+                        <span class="badge bg-warning float-end">@task.Deadline.ToString("dd/MM/yyyy HH:mm")</span>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- Tiến độ theo dạng lịch -->
+        <div class="col-md-6">
+            <h3>Tiến độ theo dõi</h3>
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                @foreach (var tracking in Model.RecentTracking)
+                {
+                    <div class="col">
+                        <div class="card h-100 border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <strong>@Html.DisplayFor(model => tracking.CreatedAt, new { @format = "dd/MM/yyyy" })</strong>
+                            </div>
+                            <div class="card-body">
+                                <p>@tracking.Report</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông báo kiểu Facebook -->
+    <div class="mt-4">
+        <h3>Thông báo</h3>
+        <div class="position-relative">
+            <button class="btn btn-light position-relative" id="notification-btn">
+                <i class="bi bi-bell-fill"></i>
+
+                @if (Model.RecentNotifications.Any(n => !n.IsRead))
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        @Model.RecentNotifications.Count(n => !n.IsRead)
+                    </span>
+                }
+            </button>
+            <div id="notification-dropdown" class="dropdown-menu dropdown-menu-end p-3" style="display: none; width: 300px;">
+                <h6 class="dropdown-header">Thông báo mới</h6>
+                @if (Model.RecentNotifications.Any())
+                {
+                    @foreach (var notification in Model.RecentNotifications)
+                    {
+                        <div class="dropdown-item @(notification.IsRead ? "text-muted" : "fw-bold")">
+                            @notification.Content
+                            <small class="text-muted d-block">@Html.DisplayFor(model => notification.CreatedAt, new { @format = "dd/MM/yyyy HH:mm" })</small>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="dropdown-item text-center">Không có thông báo nào</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript để xử lý dropdown -->
+<script>
+    document.getElementById("notification-btn").addEventListener("click", function () {
+        let dropdown = document.getElementById("notification-dropdown");
+        dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+    });
+
+    document.addEventListener("click", function (event) {
+        let dropdown = document.getElementById("notification-dropdown");
+        let button = document.getElementById("notification-btn");
+        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.style.display = "none";
+        }
+    });
+</script>
