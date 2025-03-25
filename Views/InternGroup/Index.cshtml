@@ -1,0 +1,118 @@
+﻿@model IEnumerable<InternManagement.Models.Interngroup>
+@{
+    ViewData["Title"] = "Intern Groups";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Intern Groups</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "AdminDashboard")">Dashboard</a></li>
+        <li class="breadcrumb-item active">Intern Groups</li>
+    </ol>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-users me-1"></i>
+                    Intern Group List
+                </div>
+                <div>
+                    <a href="@Url.Action("Create")" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create New Group
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Filters -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form method="get" id="filterForm" class="row">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search by name or field" 
+                                       name="searchString" value="@Context.Request.Query["searchString"]">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" name="field" onchange="document.getElementById('filterForm').submit()">
+                                <option value="">All Fields</option>
+                                @foreach (var field in ViewBag.Fields)
+                                {
+                                    <option value="@field">@field</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@Url.Action("Index")" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-redo"></i> Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Groups Grid -->
+            <div class="row">
+                @foreach (var group in Model)
+                {
+                    <div class="col-xl-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card h-100 @(group.IsActive ? "" : "bg-light")">
+                            <div class="card-header d-flex justify-content-between">
+                                <h5 class="card-title mb-0">@group.Name</h5>
+                                @if (!group.IsActive)
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text mb-2">
+                                    <strong>Field:</strong> @(string.IsNullOrEmpty(group.Field) ? "Not specified" : group.Field)
+                                </p>
+                                <p class="card-text mb-2">
+                                    <strong>Mentor:</strong> @(group.Mentor?.FullName ?? "No mentor assigned")
+                                </p>
+                                <p class="card-text">
+                                    <strong>Students:</strong> @(ViewBag.GroupStudentCounts[group.Id])
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">Created on @group.CreatedAt.ToString("yyyy-MM-dd")</small>
+                                </p>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between bg-transparent">
+                                <a href="@Url.Action("Details", new { id = group.Id })" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> Details
+                                </a>
+                                <div>
+                                    <a href="@Url.Action("ManageStudents", new { id = group.Id })" class="btn btn-sm btn-success">
+                                        <i class="fas fa-user-graduate"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", new { id = group.Id })" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = group.Id })" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                @if (!Model.Any())
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            No intern groups found. <a href="@Url.Action("Create")" class="alert-link">Create a new group</a>.
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

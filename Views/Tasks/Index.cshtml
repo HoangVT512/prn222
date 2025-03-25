@@ -1,0 +1,65 @@
+﻿@model IEnumerable<InternManagement.Models.Task>
+@{
+    ViewData["Title"] = "Danh sách nhiệm vụ";
+}
+
+<h2>Tasks List</h2>
+
+<form method="get">
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm nhiệm vụ..." />
+        </div>
+        <div class="col-md-4">
+            <select name="statusId" class="form-control">
+                <option value="">Lọc theo trạng thái</option>
+                @foreach (var status in ViewBag.Statuses)
+                {
+                    <option value="@status.Id">@status.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Tên</th>
+            <th>Mô tả</th>
+            <th>Deadline</th>
+            <th>Trạng thái</th>
+            <th>File</th>
+            <th>Sinh viên</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@task.Id</td>
+                <td>@task.Title</td>
+                <td>@task.Description</td>
+                <td>@task.Deadline.ToString("dd/MM/yyyy")</td>
+                <td>@task.Status.Name</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(@task.File))
+                    {
+                        <a href="@Url.Action("Download", "Tasks", new { filePath = @task.File })" class="btn btn-sm btn-success">Download</a>
+                    }
+                </td>
+                <td>@(task.Student?.FullName ?? "Chưa gán")</td>
+                <td>
+                    <a href="/Tasks/Edit/@task.Id" class="btn btn-warning btn-sm">Cập nhật</a>
+                    <a href="/Tasks/Evaluate/@task.Id" class="btn btn-success btn-sm">Đánh giá</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="/Tasks/Create" class="btn btn-primary">Thêm nhiệm vụ</a>

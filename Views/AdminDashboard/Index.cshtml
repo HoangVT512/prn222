@@ -1,0 +1,177 @@
+﻿@model InternManagement.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dashboard</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+
+    <!-- Summary Cards -->
+    <div class="row">
+        <div class="col-xl-4 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h2 class="mb-0">@Model.TotalStudents</h2>
+                            <div>Total Students</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-user-graduate fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="@Url.Action("Index", "StudentManagement")">View Students</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h2 class="mb-0">@Model.TotalMentors</h2>
+                            <div>Total Mentors</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-user-tie fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="@Url.Action("Index", "MentorManagement")">View Mentors</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h2 class="mb-0">@Model.TotalGroups</h2>
+                            <div>Intern Groups</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-users fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="@Url.Action("Index", "InternGroup")">View Groups</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie me-1"></i>
+                    Tasks by Status
+                </div>
+                <div class="card-body">
+                    <canvas id="taskStatusChart" width="100%" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-exclamation-circle me-1"></i>
+                    Students with Late Submissions
+                </div>
+                <div class="card-body">
+                    @if (Model.StudentsWithLateSubmissions != null && Model.StudentsWithLateSubmissions.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Task</th>
+                                        <th>Days Late</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.StudentsWithLateSubmissions)
+                                    {
+                                        <tr>
+                                            <td>@item.Student?.FullName</td>
+                                            <td>@item.Task?.Title</td>
+                                            <td>@item.DaysLate days</td>
+                                            <td>
+                                                <a href="@Url.Action("Details", "TaskManagement", new { id = item.Task?.Id })" class="btn btn-sm btn-primary">View Task</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success">
+                            No late submissions at this time!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chart setup for task status
+        const statusLabels = Object.keys(@Json.Serialize(Model.TasksByStatus));
+        const statusData = Object.values(@Json.Serialize(Model.TasksByStatus));
+
+        // Generate random colors for the chart
+        const colors = statusLabels.map(() => {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            return `rgba(${r}, ${g}, ${b}, 0.7)`;
+        });
+
+        const ctx = document.getElementById('taskStatusChart').getContext('2d');
+        const taskStatusChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusData,
+                    backgroundColor: colors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Task Distribution by Status'
+                    }
+                }
+            }
+        });
+    </script>
+}

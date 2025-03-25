@@ -1,0 +1,51 @@
+﻿@model InternManagement.Models.Dailytracking
+
+@{
+    ViewData["Title"] = "Edit Daily Report";
+    var reportDate = Model.CreatedAt.ToString("yyyy-MM-dd");
+}
+
+<div class="container-fluid">
+    <h1 class="mb-4">Edit Daily Progress Report</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-calendar-day"></i> Report for @reportDate
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label asp-for="TaskId" class="form-label">Related Task</label>
+                    <select asp-for="TaskId" class="form-select" asp-items="ViewBag.TaskId">
+                        <option value="">-- Select the task you worked on --</option>
+                    </select>
+                    <span asp-validation-for="TaskId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Report" class="form-label">Daily Report</label>
+                    <textarea asp-for="Report" class="form-control" rows="10"></textarea>
+                    <span asp-validation-for="Report" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

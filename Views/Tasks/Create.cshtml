@@ -1,0 +1,41 @@
+﻿@model InternManagement.Models.Task
+@{
+    ViewData["Title"] = "Tạo nhiệm vụ mới";
+}
+
+<h2>Tạo nhiệm vụ mới</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label>Tên nhiệm vụ</label>
+        <input asp-for="Title" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Mô tả</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Deadline</label>
+        <input asp-for="Deadline" type="datetime-local" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Đính kèm tệp</label>
+        <input type="file" name="file" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Gán cho sinh viên</label>
+        <select asp-for="StudentId" class="form-control">
+            <option value="">-- Chọn sinh viên --</option>
+            @foreach (var student in ViewBag.Students)
+            {
+                <option value="@student.Id">@student.FullName</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+</form>

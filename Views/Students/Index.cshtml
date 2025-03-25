@@ -1,0 +1,80 @@
+﻿@model IEnumerable<InternManagement.Models.User>
+
+@{
+    ViewData["Title"] = "Students List";
+}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Students List</h1>
+
+    <!-- Form tìm kiếm và lọc -->
+    <form method="get" class="row g-3 align-items-center mb-3">
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên hoặc email">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        </div>
+        <div class="col-md-3 text-end">
+            <a asp-action="Create" class="btn btn-success">+ Thêm sinh viên</a>
+        </div>
+    </form>
+
+    <!-- Bảng danh sách sinh viên -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Image</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.FullName)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.Email)</th>
+                    <th scope="col">@Html.DisplayNameFor(model => model.Phone)</th>
+                    <th scope="col">Group</th>
+                    <th scope="col" class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.Pfp" alt="Avatar" class="rounded-circle" style="width:50px; height:50px; object-fit:cover;">
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Group.Name)</td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Hiển thị thông báo -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var message = "@TempData["SuccessMessage"]";
+            if (message) {
+                let toast = new bootstrap.Toast(document.getElementById('successToast'));
+                $('#successMessage').text(message);
+                toast.show();
+            }
+        });
+    </script>
+}
+
+<!-- Toast thông báo -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+    <div id="successToast" class="toast bg-success text-white" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="successMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>

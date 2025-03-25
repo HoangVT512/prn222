@@ -1,0 +1,244 @@
+﻿@using InternManagement.Models
+@{
+    ViewData["Title"] = "Student Dashboard";
+    var student = ViewBag.Student;
+    var pendingTasks = ViewBag.PendingTasks;
+    var recentSubmissions = ViewBag.RecentSubmissions;
+    var recentEvaluations = ViewBag.RecentEvaluations;
+    var unreadNotifications = ViewBag.UnreadNotifications;
+    var todaysTracking = ViewBag.TodaysTracking;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Welcome, @student.FullName</h1>
+        <div>
+            @if (todaysTracking != null)
+            {
+                <a asp-controller="DailyTracking" asp-action="Edit" asp-route-id="@todaysTracking.Id" class="btn btn-success me-2">
+                    <i class="fas fa-edit"></i> Edit Today's Report
+                </a>
+            }
+            else
+            {
+                <a asp-controller="DailyTracking" asp-action="Create" class="btn btn-primary me-2">
+                    <i class="fas fa-calendar-day"></i> Submit Daily Report
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="alert alert-info mb-4">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle me-2 fa-lg"></i>
+            <div>
+                <strong>Group:</strong> @student.Group?.Name
+                @if (todaysTracking == null)
+                {
+                    <span class="ms-3"><strong>Reminder:</strong> Don't forget to submit your daily tracking report!</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-tasks"></i> Pending Tasks</span>
+                    <a class="btn btn-sm btn-primary" asp-controller="StudentTasks" asp-action="Index">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (pendingTasks.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Status</th>
+                                        <th>Deadline</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var task in pendingTasks)
+                                    {
+                                        <tr>
+                                            <td>@task.Title</td>
+                                            <td>
+                                                @if (task.Status != null)
+                                                {
+                                                    <span class="badge @(task.Status.Name == "Completed" ? "bg-success" : "bg-warning")">
+                                                        @task.Status.Name
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>@task.Deadline.ToString("yyyy-MM-dd")</td>
+                                            <td>
+                                                <a class="btn btn-sm btn-info" asp-controller="StudentTasks" asp-action="Details" asp-route-id="@task.Id">
+                                                    Details
+                                                </a>
+                                                <a class="btn btn-sm btn-primary" asp-controller="StudentTasks" asp-action="Submit" asp-route-id="@task.Id">
+                                                    Submit
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-center">No pending tasks.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-file-alt"></i> Recent Submissions
+                </div>
+                <div class="card-body">
+                    @if (recentSubmissions.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Task</th>
+                                        <th>Submitted At</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var submission in recentSubmissions)
+                                    {
+                                        <tr>
+                                            <td>@submission.Task?.Title</td>
+                                            <td>@submission.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@submission.Status</td>
+                                            <td>
+                                                @if (submission.ProgressEvaluate != null)
+                                                {
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar" style="width: @(submission.ProgressEvaluate)%;"
+                                                             aria-valuenow="@submission.ProgressEvaluate" aria-valuemin="0" aria-valuemax="100">
+                                                            @(submission.ProgressEvaluate)%
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span>Not evaluated yet</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-center">No recent submissions.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-calendar-day"></i> Daily Tracking</span>
+                    <a class="btn btn-sm btn-primary" asp-controller="DailyTracking" asp-action="Index">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (todaysTracking != null)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> You've submitted today's report
+                        </div>
+                        <h6>Today's Report:</h6>
+                        <p>@(todaysTracking.Report.Length > 100 ? todaysTracking.Report.Substring(0, 100) + "..." : todaysTracking.Report)</p>
+                        <a asp-controller="DailyTracking" asp-action="Edit" asp-route-id="@todaysTracking.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i> Edit Report
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i class="fas fa-calendar-day fa-3x mb-3 text-muted"></i>
+                            <p>You haven't submitted your daily tracking report for today yet.</p>
+                            <a asp-controller="DailyTracking" asp-action="Create" class="btn btn-primary mt-2">
+                                <i class="fas fa-plus-circle"></i> Submit Today's Report
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-bell"></i> Notifications
+                </div>
+                <div class="card-body">
+                    @if (unreadNotifications.Count > 0)
+                    {
+                        <ul class="list-group">
+                            @foreach (var notification in unreadNotifications)
+                            {
+                                <li class="list-group-item">
+                                    <p>@notification.Content</p>
+                                    <small class="text-muted">@notification.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-center">No new notifications.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-star"></i> Recent Evaluations
+                </div>
+                <div class="card-body">
+                    @if (recentEvaluations.Count > 0)
+                    {
+                        <ul class="list-group">
+                            @foreach (var evaluation in recentEvaluations)
+                            {
+                                <li class="list-group-item">
+                                    <h6>@evaluation.Task?.Title</h6>
+                                    <p>
+                                        <strong>Rating:</strong>
+                                        @if (evaluation.Rating.HasValue)
+                                        {
+                                            <span class="badge bg-primary">@evaluation.Rating/100</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Not rated</span>
+                                        }
+                                    </p>
+                                    <p><strong>Comment:</strong> @evaluation.Comment</p>
+                                    <small class="text-muted">By @evaluation.Mentor?.FullName on @evaluation.CreatedAt.ToString("yyyy-MM-dd")</small>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-center">No recent evaluations.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

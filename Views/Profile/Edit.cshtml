@@ -1,0 +1,85 @@
+﻿@model InternManagement.Models.User
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">Edit Profile</h1>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-edit"></i> Update Your Information
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="FullName" class="form-label">Full Name</label>
+                                    <input asp-for="FullName" class="form-control" />
+                                    <span asp-validation-for="FullName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="Email" class="form-label">Email (readonly)</label>
+                                    <input asp-for="Email" class="form-control" readonly />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="Phone" class="form-label">Phone</label>
+                                    <input asp-for="Phone" class="form-control" />
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="Username" class="form-label">Username (readonly)</label>
+                                    <input asp-for="Username" class="form-control" readonly />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="profilePicture" class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" id="profilePicture" name="profilePicture">
+                            <div class="form-text">Upload a square image for best results. JPG, PNG formats accepted.</div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Pfp))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Current Profile Picture</label>
+                                <div>
+                                    <img src="@Model.Pfp" alt="Current Profile" style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+                                </div>
+                            </div>
+                        }
+
+                        <div class="mb-3 d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

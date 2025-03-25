@@ -1,0 +1,21 @@
+﻿@model InternManagement.Models.Task
+
+<h2>Đánh giá nhiệm vụ: @Model.Title</h2>
+
+<form asp-action="Evaluate" method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <div class="form-group">
+        <label>Đánh giá (%)</label>
+        <input type="range" name="rating" class="form-control" min="0" max="100" step="1"
+               oninput="this.nextElementSibling.value = this.value">
+        <output>50</output>%
+    </div>
+
+    <div class="form-group">
+        <label>Nhận xét</label>
+        <textarea name="comment" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</form>

@@ -1,0 +1,274 @@
+﻿@model IEnumerable<InternManagement.Models.Dailytracking>
+
+@{
+    ViewData["Title"] = "Daily Tracking Reports";
+    var groupedByMonth = Model.GroupBy(t => new { t.CreatedAt.Year, t.CreatedAt.Month })
+                              .OrderByDescending(g => g.Key.Year)
+                              .ThenByDescending(g => g.Key.Month);
+
+    string[] monthNames = new string[]
+    {
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Daily Tracking Reports</h1>
+        <div>
+            <div class="btn-group me-2" role="group" aria-label="View options">
+                <button type="button" class="btn btn-outline-secondary active" id="calendarView">
+                    <i class="fas fa-th"></i> Calendar
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="listView">
+                    <i class="fas fa-list"></i> List
+                </button>
+            </div>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Add Today's Report
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-calendar-alt"></i> Your Tracking History
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-light" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                <button type="button" class="btn btn-sm btn-light" id="currentMonth">Current Month</button>
+                <button type="button" class="btn btn-sm btn-light" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <!-- Calendar View -->
+            <div id="calendarViewContent">
+                @if (Model.Any())
+                {
+                    @foreach (var monthGroup in groupedByMonth)
+                    {
+                        <div class="month-section mb-4" data-year="@monthGroup.Key.Year" data-month="@monthGroup.Key.Month">
+                            <h3 class="month-title border-bottom pb-2 mb-3">@monthNames[monthGroup.Key.Month - 1] @monthGroup.Key.Year</h3>
+
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3 mb-4">
+                                @foreach (var tracking in monthGroup.OrderByDescending(t => t.CreatedAt.Day))
+                                {
+                                    <div class="col">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <span class="fw-bold">
+                                                    <i class="fas fa-calendar-day"></i> @tracking.CreatedAt.ToString("yyyy-MM-dd")
+                                                </span>
+                                                <span class="badge bg-primary rounded-pill">Day @tracking.CreatedAt.Day</span>
+                                            </div>
+                                            <div class="card-body">
+                                                @if (tracking.Task != null)
+                                                {
+                                                    <h5 class="card-title text-truncate" title="@tracking.Task.Title">
+                                                        <i class="fas fa-tasks text-primary"></i> @tracking.Task.Title
+                                                    </h5>
+                                                }
+                                                <p class="card-text tracking-report">
+                                                    @(tracking.Report.Length > 150 ? tracking.Report.Substring(0, 150) + "..." : tracking.Report)
+                                                </p>
+                                            </div>
+                                            <div class="card-footer bg-white border-top-0">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock"></i> @tracking.CreatedAt.ToString("HH:mm")
+                                                    </small>
+                                                    <a asp-action="Edit" asp-route-id="@tracking.Id" class="btn btn-outline-primary btn-sm">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-day fa-4x mb-3 text-muted"></i>
+                        <h4 class="text-muted">No tracking reports submitted yet</h4>
+                        <p>Track your daily progress to keep your mentor updated.</p>
+                        <a asp-action="Create" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus-circle"></i> Submit Your First Report
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <!-- List View (Hidden by default) -->
+            <div id="listViewContent" style="display: none;">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="trackingTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Task</th>
+                                    <th>Report</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderByDescending(m => m.CreatedAt))
+                                {
+                                    <tr>
+                                        <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                        <td>
+                                            @if (item.Task != null)
+                                            {
+                                                @item.Task.Title
+                                            }
+                                        </td>
+                                        <td>@(item.Report.Length > 100 ? item.Report.Substring(0, 100) + "..." : item.Report)</td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-day fa-4x mb-3 text-muted"></i>
+                        <h4 class="text-muted">No tracking reports submitted yet</h4>
+                        <p>Track your daily progress to keep your mentor updated.</p>
+                        <a asp-action="Create" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus-circle"></i> Submit Your First Report
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable for list view
+            $('#trackingTable').DataTable({
+                order: [[0, 'desc']],
+                responsive: true
+            });
+
+            // Toggle between calendar and list views
+            $('#calendarView').click(function () {
+                $(this).addClass('active');
+                $('#listView').removeClass('active');
+                $('#calendarViewContent').show();
+                $('#listViewContent').hide();
+            });
+
+            $('#listView').click(function () {
+                $(this).addClass('active');
+                $('#calendarView').removeClass('active');
+                $('#calendarViewContent').hide();
+                $('#listViewContent').show();
+            });
+
+            // Month navigation logic
+            const monthSections = $('.month-section');
+            let currentIndex = 0;
+
+            function updateVisibleMonth() {
+                monthSections.hide();
+                if (monthSections.length > 0) {
+                    $(monthSections[currentIndex]).show();
+                    const year = $(monthSections[currentIndex]).data('year');
+                    const month = $(monthSections[currentIndex]).data('month');
+                    const monthName = getMonthName(month - 1);
+                    $('#currentMonth').text(`${monthName} ${year}`);
+                }
+            }
+
+            function getMonthName(monthIndex) {
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+                return monthNames[monthIndex];
+            }
+
+            $('#prevMonth').click(function () {
+                if (currentIndex < monthSections.length - 1) {
+                    currentIndex++;
+                    updateVisibleMonth();
+                }
+            });
+
+            $('#nextMonth').click(function () {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateVisibleMonth();
+                }
+            });
+
+            $('#currentMonth').click(function () {
+                currentIndex = 0;
+                updateVisibleMonth();
+            });
+
+            // Initialize with only the current month visible
+            updateVisibleMonth();
+
+            // Make cards clickable to show full report
+            $('.card').click(function (e) {
+                // Only expand if click target is not a button
+                if (!$(e.target).closest('a').length) {
+                    const report = $(this).find('.tracking-report');
+                    const fullText = report.data('full-text') || report.text();
+                    const isExpanded = report.data('expanded');
+
+                    if (!isExpanded) {
+                        report.data('original-text', report.text());
+                        report.text(fullText);
+                        report.data('expanded', true);
+                    } else {
+                        report.text(report.data('original-text'));
+                        report.data('expanded', false);
+                    }
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+                cursor: pointer;
+            }
+
+        .tracking-report {
+            min-height: 80px;
+            overflow: hidden;
+        }
+
+        /* Custom styles for month navigation */
+        .month-title {
+            color: #3498db;
+        }
+
+        .badge.rounded-pill {
+            font-size: 0.8rem;
+        }
+    </style>
+}

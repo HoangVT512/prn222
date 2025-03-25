@@ -1,0 +1,100 @@
+﻿@model InternManagement.Models.ViewModels.MentorGroupAssignmentViewModel
+@{
+    ViewData["Title"] = "Assign Groups to Mentor";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Assign Groups to Mentor</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "AdminDashboard")">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "MentorManagement")">Mentors</a></li>
+        <li class="breadcrumb-item"><a href="@Url.Action("Details", new { id = Model.MentorId })">@Model.MentorName</a></li>
+        <li class="breadcrumb-item active">Assign Groups</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-users me-1"></i>
+            Assign Groups to @Model.MentorName
+        </div>
+        <div class="card-body">
+            <form asp-action="AssignGroups" method="post">
+                <input type="hidden" name="id" value="@Model.MentorId" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                Currently Assigned Groups (@Model.AssignedGroups.Count)
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group">
+                                    @foreach (var group in Model.AssignedGroups)
+                                    {
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="fw-bold">@group.Name</div>
+                                                <small class="text-muted">@group.Field</small>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="selectedGroups" value="@group.Id" checked="checked" id="group-@group.Id" />
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                @if (!Model.AssignedGroups.Any())
+                                {
+                                    <div class="alert alert-info">
+                                        No groups are currently assigned to this mentor.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                Available Groups (@Model.AvailableGroups.Count)
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group">
+                                    @foreach (var group in Model.AvailableGroups)
+                                    {
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="fw-bold">@group.Name</div>
+                                                <small class="text-muted">@group.Field</small>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="selectedGroups" value="@group.Id" id="group-@group.Id" />
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                @if (!Model.AvailableGroups.Any())
+                                {
+                                    <div class="alert alert-info">
+                                        No unassigned groups are available.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Save Group Assignments
+                    </button>
+                    <a href="@Url.Action("Details", new { id = Model.MentorId })" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Details
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

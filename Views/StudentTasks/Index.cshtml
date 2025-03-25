@@ -1,0 +1,103 @@
+﻿@model IEnumerable<InternManagement.Models.Task>
+
+@{
+    ViewData["Title"] = "My Tasks";
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">My Tasks</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            All Tasks
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="tasksTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Deadline</th>
+                            <th>Assigned By</th>
+                            <th>Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var task in Model)
+                        {
+                            <tr>
+                                <td>@task.Title</td>
+                                <td>
+                                    @if (task.Status != null)
+                                    {
+                                        string badgeClass = "bg-secondary";
+                                        switch (task.Status.Name.ToLower())
+                                        {
+                                            case "new":
+                                                badgeClass = "bg-info";
+                                                break;
+                                            case "in progress":
+                                                badgeClass = "bg-primary";
+                                                break;
+                                            case "completed":
+                                                badgeClass = "bg-success";
+                                                break;
+                                            case "overdue":
+                                                badgeClass = "bg-danger";
+                                                break;
+                                        }
+                                        <span class="badge @badgeClass">@task.Status.Name</span>
+                                    }
+                                </td>
+                                <td>
+                                    @task.Deadline.ToString("yyyy-MM-dd")
+                                    @if (task.Deadline < DateTime.Now)
+                                    {
+                                        <span class="badge bg-danger ms-2">Overdue</span>
+                                    }
+                                </td>
+                                <td>@task.Mentor?.FullName</td>
+                                <td>
+                                    @if (task.StudentId.HasValue)
+                                    {
+                                        <span class="badge bg-info">Individual</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Group</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> Details
+                                        </a>
+                                        <a asp-action="Submit" asp-route-id="@task.Id" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-upload"></i> Submit
+                                        </a>
+                                        <a asp-action="DailyTracking" asp-route-id="@task.Id" class="btn btn-sm btn-secondary">
+                                            <i class="fas fa-calendar-day"></i> Daily Report
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tasksTable').DataTable({
+                order: [[2, 'asc']]
+            });
+        });
+    </script>
+}

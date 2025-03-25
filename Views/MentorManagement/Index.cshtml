@@ -1,0 +1,104 @@
+﻿@model IEnumerable<InternManagement.Models.User>
+@{
+    ViewData["Title"] = "Mentor Management";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Mentor Management</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "AdminDashboard")">Dashboard</a></li>
+        <li class="breadcrumb-item active">Mentors</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-user-tie me-1"></i>
+                    Mentor List
+                </div>
+                <div>
+                    <a href="@Url.Action("Create")" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Mentor
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Filters -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form method="get" id="filterForm">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search by name or email"
+                                   name="searchString" value="@Context.Request.Query["searchString"]">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo"></i> Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Mentor Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="mentorTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var mentor in Model)
+                        {
+                            <tr>
+                                <td>@mentor.FullName</td>
+                                <td>@mentor.Email</td>
+                                <td>@mentor.Phone</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("Details", new { id = mentor.Id })" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", new { id = mentor.Id })" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="@Url.Action("AssignGroups", new { id = mentor.Id })" class="btn btn-sm btn-success">
+                                            <i class="fas fa-users"></i>
+                                        </a>
+                                        <a href="@Url.Action("Delete", new { id = mentor.Id })" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#mentorTable').DataTable({
+                paging: true,
+                searching: false,
+                ordering: true,
+                info: true,
+                "pageLength": 10
+            });
+        });
+    </script>
+}

@@ -1,0 +1,224 @@
+﻿@model InternManagement.Models.Task
+
+@{
+    ViewData["Title"] = "Task Details";
+    var submissions = ViewBag.Submissions as IEnumerable<InternManagement.Models.Tasksubmit>;
+    var dailyReports = ViewBag.DailyReports as IEnumerable<InternManagement.Models.Dailytracking>;
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">Task Details</h1>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="StudentDashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Tasks</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-tasks"></i> Task Information
+                </div>
+                <div class="card-body">
+                    <h4>@Model.Title</h4>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Status:</strong>
+                            @if (Model.Status != null)
+                            {
+                                string badgeClass = "bg-secondary";
+                                switch (Model.Status.Name.ToLower())
+                                {
+                                    case "new":
+                                        badgeClass = "bg-info";
+                                        break;
+                                    case "in progress":
+                                        badgeClass = "bg-primary";
+                                        break;
+                                    case "completed":
+                                        badgeClass = "bg-success";
+                                        break;
+                                    case "overdue":
+                                        badgeClass = "bg-danger";
+                                        break;
+                                }
+                                <span class="badge @badgeClass">@Model.Status.Name</span>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Deadline:</strong>
+                            @Model.Deadline.ToString("yyyy-MM-dd")
+                            @if (Model.Deadline < DateTime.Now)
+                            {
+                                <span class="badge bg-danger ms-2">Overdue</span>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Assigned By:</strong> @Model.Mentor?.FullName
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Assigned To:</strong>
+                            @if (Model.StudentId.HasValue)
+                            {
+                                <span>Individual (You)</span>
+                            }
+                            else
+                            {
+                                <span>Group (@Model.Group?.Name)</span>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd")
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Last Updated:</strong> @Model.UpdatedAt.ToString("yyyy-MM-dd")
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <div class="card mt-2">
+                            <div class="card-body bg-light">
+                                @Html.Raw(Model.Description)
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.File))
+                    {
+                        <div class="mb-3">
+                            <strong>Attached File:</strong>
+                            <div class="mt-2">
+                                <a href="@Model.File" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="fas fa-file-download"></i> Download File
+                                </a>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="mt-4 d-flex">
+                        <a asp-action="Submit" asp-route-id="@Model.Id" class="btn btn-primary me-2">
+                            <i class="fas fa-upload"></i> Submit Task
+                        </a>
+                        <a asp-action="DailyTracking" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-calendar-day"></i> Add Daily Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-file-alt"></i> My Submissions
+                </div>
+                <div class="card-body">
+                    @if (submissions != null && submissions.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Submitted At</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                        <th>File</th>
+                                        <th>Mentor Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var submission in submissions)
+                                    {
+                                        <tr>
+                                            <td>@submission.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>
+                                                @if (submission.Status != null)
+                                                {
+                                                    <span class="badge @(submission.Status == "Approved" ? "bg-success" : "bg-warning")">
+                                                        @submission.Status
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (submission.ProgressEvaluate.HasValue)
+                                                {
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar" style="width: @(submission.ProgressEvaluate)%;"
+                                                             aria-valuenow="@submission.ProgressEvaluate" aria-valuemin="0" aria-valuemax="100">
+                                                            @(submission.ProgressEvaluate)%
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span>Not evaluated yet</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(submission.SubmittedFile))
+                                                {
+                                                    <a href="@submission.SubmittedFile" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                        <i class="fas fa-file-download"></i> Download
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <span>No file</span>
+                                                }
+                                            </td>
+                                            <td>@submission.MentorNote</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-center">No submissions yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-calendar-day"></i> Daily Progress Reports
+                </div>
+                <div class="card-body">
+                    @if (dailyReports != null && dailyReports.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var report in dailyReports)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Report on @report.CreatedAt.ToString("yyyy-MM-dd")</h6>
+                                    </div>
+                                    <p class="mb-1">@report.Report</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-center">No daily reports yet.</p>
+                        <div class="text-center">
+                            <a asp-action="DailyTracking" asp-route-id="@Model.Id" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Daily Report
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

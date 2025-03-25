@@ -1,0 +1,140 @@
+﻿@model InternManagement.Models.Interngroup
+@{
+    ViewData["Title"] = "Edit Intern Group";
+    Layout = "_Layout";
+    var currentTime = "2025-03-25 02:02:35"; // Updated current time
+    var currentUser = "HoangVT512"; // Updated current user
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Edit Intern Group</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "AdminDashboard")">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "InternGroup")">Intern Groups</a></li>
+        <li class="breadcrumb-item"><a href="@Url.Action("Details", new { id = Model.Id })">@Model.Name</a></li>
+        <li class="breadcrumb-item active">Edit</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-edit me-1"></i>
+            Edit Group Information
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Name" class="form-control" placeholder="Group Name" required />
+                            <label asp-for="Name">Group Name</label>
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Field" class="form-control" placeholder="Field/Specialty" />
+                            <label asp-for="Field">Field/Specialty</label>
+                            <span asp-validation-for="Field" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <select asp-for="MentorId" class="form-select" asp-items="ViewBag.Mentors">
+                                <option value="">-- Select Mentor (Optional) --</option>
+                            </select>
+                            <label asp-for="MentorId">Assigned Mentor</label>
+                            <span asp-validation-for="MentorId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mt-4">
+                            <input class="form-check-input" type="checkbox" asp-for="IsActive" />
+                            <label class="form-check-label" asp-for="IsActive">Active Group</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        Current Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Created On</label>
+                                    <input type="text" class="form-control" value="@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Last Modified</label>
+                                    <input type="text" class="form-control" value="@DateTime.Parse(currentTime).ToString("yyyy-MM-dd HH:mm")" readonly />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Group Status</label>
+                            @if (Model.IsActive)
+                            {
+                                <div class="badge bg-success p-2">Active</div>
+                            }
+                            else
+                            {
+                                <div class="badge bg-secondary p-2">Inactive</div>
+                            }
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            To manage students in this group, use the <a href="@Url.Action("ManageStudents", new { id = Model.Id })">Manage Students</a> page.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header text-white bg-danger">
+            <i class="fas fa-exclamation-triangle me-1"></i>
+            Danger Zone
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <strong>Warning:</strong> Deleting a group will remove all associations with students.
+                Students will be unassigned from this group but not deleted.
+            </div>
+
+            <div class="text-center">
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                    <i class="fas fa-trash-alt me-2"></i>Delete Group
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

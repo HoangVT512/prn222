@@ -1,0 +1,68 @@
+﻿<div class="sb-sidenav-menu">
+    <div class="nav">
+        <div class="sb-sidenav-menu-heading">Core</div>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "AdminDashboard" ? "active" : "")"
+           href="@Url.Action("Index", "AdminDashboard")">
+            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+            Dashboard
+        </a>
+
+        <div class="sb-sidenav-menu-heading">Management</div>
+
+        <!-- Student Management -->
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "StudentManagement" ? "active" : "")"
+           href="@Url.Action("Index", "StudentManagement")">
+            <div class="sb-nav-link-icon"><i class="fas fa-user-graduate"></i></div>
+            Students
+        </a>
+
+        <!-- Mentor Management -->
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "MentorManagement" ? "active" : "")"
+           href="@Url.Action("Index", "MentorManagement")">
+            <div class="sb-nav-link-icon"><i class="fas fa-user-tie"></i></div>
+            Mentors
+        </a>
+
+        <!-- Intern Group Management -->
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "InternGroup" ? "active" : "")"
+           href="@Url.Action("Index", "InternGroup")">
+            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+            Intern Groups
+        </a>
+
+        <!-- Task Management -->
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "TaskManagement" ? "active" : "")"
+           href="@Url.Action("Index", "TaskManagement")">
+            <div class="sb-nav-link-icon"><i class="fas fa-tasks"></i></div>
+            Tasks
+        </a>
+
+        <div class="sb-sidenav-menu-heading">Reports</div>
+
+        <!-- Reports & Statistics -->
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReports" aria-expanded="false" aria-controls="collapseReports">
+            <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+            Reports
+            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+        <div class="collapse" id="collapseReports" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+            <nav class="sb-sidenav-menu-nested nav">
+                <a class="nav-link" href="#">Student Progress</a>
+                <a class="nav-link" href="#">Task Completion Rate</a>
+                <a class="nav-link" href="#">Mentor Performance</a>
+            </nav>
+        </div>
+
+        <div class="sb-sidenav-menu-heading">System</div>
+
+        <!-- System Settings -->
+        <a class="nav-link" href="#">
+            <div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>
+            Settings
+        </a>
+    </div>
+</div>
+<div class="sb-sidenav-footer">
+    <div class="small">Logged in as:</div>
+    Admin User
+</div>
